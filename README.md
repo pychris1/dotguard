@@ -1,49 +1,123 @@
 <p align="center">
-  <img src="logo.png" alt="dotguard logo" width="160" />
+  <img src="logo.png" alt="dotguard logo" width="140" />
 </p>
 
-<h1 align="center">.dot Guard</h1>
+<h1 align="center">dotguard</h1>
 
-<p align="center">Validate your <code>.env</code> file against <code>.env.example</code> before you deploy.</p>
+<p align="center">
+  Validate your <code>.env</code> file against <code>.env.example</code> before you deploy.
+</p>
+
+<p align="center">
+  <a href="https://pypi.org/project/dotguard/"><img alt="PyPI" src="https://img.shields.io/pypi/v/dotguard?color=000&labelColor=111&style=flat-square"></a>
+  <a href="https://pypi.org/project/dotguard/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/dotguard?color=000&labelColor=111&style=flat-square"></a>
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-000?labelColor=111&style=flat-square"></a>
+</p>
 
 ---
 
-## Why dotguard?
+## The problem
 
-In the age of AI-generated code, developers are shipping placeholder credentials and misconfigured environments to production every day. dotguard catches it before you deploy.
+AI-assisted coding is fast. It's also quietly shipping placeholder credentials, empty secrets, and misconfigured environments to production every day.
+
+Your `.env` file is the last line of defense — and most teams never validate it.
+
+**dotguard does.**
+
+---
 
 ## What it catches
 
 | Check | Severity |
 |---|---|
-| Key in .env.example but missing from .env | ERROR |
-| Sensitive key with empty value | ERROR |
-| Sensitive key with a placeholder value | ERROR |
-| .env file tracked or staged in git | ERROR |
-| Non-sensitive key with a placeholder value | WARNING |
-| Key in .env but not in .env.example | WARNING |
-| Non-sensitive key with empty value | WARNING |
+| Key in `.env.example` missing from `.env` | `ERROR` |
+| Sensitive key with an empty value | `ERROR` |
+| Sensitive key with a placeholder value (e.g. `your-key-here`) | `ERROR` |
+| `.env` file tracked or staged in git | `ERROR` |
+| Non-sensitive key with a placeholder value | `WARNING` |
+| Key in `.env` not documented in `.env.example` | `WARNING` |
+| Non-sensitive key with an empty value | `WARNING` |
+
+---
 
 ## Install
 
+```bash
 pip install dotguard
+```
+
+---
 
 ## Usage
 
-dotguard                        validate .env against .env.example
-dotguard --strict               treat warnings as errors
-dotguard --no-extras            treat extra keys as errors
-dotguard --no-git-check         skip git tracking check
-dotguard --quiet                silent, exit code only
-dotguard init                   generate .env.example from .env
-dotguard init --force           overwrite existing .env.example
+```bash
+dotguard                   # Validate .env against .env.example
+dotguard --strict          # Treat warnings as errors (recommended for CI)
+dotguard --no-extras       # Treat undocumented keys as errors
+dotguard --no-git-check    # Skip git tracking check
+dotguard --quiet           # Silent — exit code only
+dotguard init              # Generate .env.example from your .env
+dotguard init --force      # Overwrite an existing .env.example
+```
+
+---
 
 ## Exit codes
 
-0 = All checks passed
-1 = One or more errors
-2 = File not found
+| Code | Meaning |
+|---|---|
+| `0` | All checks passed |
+| `1` | One or more errors |
+| `2` | File not found |
+
+---
+
+## CI integration
+
+Drop dotguard into your pipeline to catch environment issues before they reach production.
+
+**GitHub Actions**
+
+```yaml
+- name: Validate environment
+  run: |
+    pip install dotguard
+    dotguard --strict
+```
+
+**Pre-commit hook**
+
+```bash
+# .git/hooks/pre-commit
+dotguard --quiet || { echo "dotguard: fix .env errors before committing"; exit 1; }
+```
+
+---
+
+## Getting started
+
+If you don't have a `.env.example` yet, generate one from your existing `.env`:
+
+```bash
+dotguard init
+```
+
+This creates a `.env.example` with all your keys present but values scrubbed — safe to commit, ready to share with your team.
+
+Then validate any time:
+
+```bash
+dotguard
+```
+
+---
 
 ## License
 
-MIT
+[MIT](LICENSE)
+
+---
+
+<p align="center">
+  Built for developers who ship with confidence.
+</p>
