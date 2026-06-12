@@ -34,6 +34,10 @@ jobs:
 
       - name: Run dotGuard
         run: |
+          if [ ! -f ".env" ]; then
+            echo "dotguard: no .env file found, skipping."
+            exit 0
+          fi
           dotguard \
             --env "${{ inputs.env_file || '.env' }}" \
             --example "${{ inputs.example_file || '.env.example' }}" \
